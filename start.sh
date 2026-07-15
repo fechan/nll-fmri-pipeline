@@ -1,0 +1,1 @@
+docker compose run --rm -it --env DISPLAY=$DISPLAY main

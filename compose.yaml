@@ -1,0 +1,7 @@
+services:
+  main:
+    build: .
+    volumes:
+      - ./workdir:/workdir
+      - "$HOME/.Xauthority:/root/.Xauthority:rw"
+    network_mode: "host"
