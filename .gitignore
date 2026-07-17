@@ -1,1 +1,4 @@
 workdir
+.venv
+scripts/logs
+playground.ipynb

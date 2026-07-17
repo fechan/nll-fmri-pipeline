@@ -1,0 +1,12 @@
+[project]
+name = "deafmeg-scripts"
+version = "0.1.0"
+description = "MRI analysis scripts for NLL"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "fslpy>=3.28.1",
+    "ipykernel>=7.3.0",
+    "numpy>=2.5.1",
+    "pandas>=3.0.3",
+]
