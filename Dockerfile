@@ -21,7 +21,8 @@ RUN apt update  -y && \
 RUN wget https://fsl.fmrib.ox.ac.uk/fsldownloads/fslconda/releases/fslinstaller.py
 RUN python ./fslinstaller.py -d /usr/local/fsl/
 
-RUN apt-get install -qqy x11-apps
+RUN apt-get install -y python3-pip x11-apps
+RUN pip install uv
 
 ENV USER "root"
 ENTRYPOINT [ "sh", "-c", ". /usr/local/fsl/etc/fslconf/fsl.sh && /bin/bash" ]
