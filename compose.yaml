@@ -3,5 +3,6 @@ services:
     build: .
     volumes:
       - ./workdir:/workdir
+      - ./scripts:/scripts
       - "$HOME/.Xauthority:/root/.Xauthority:rw"
     network_mode: "host"
