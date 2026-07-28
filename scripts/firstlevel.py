@@ -35,7 +35,7 @@ def prepare_design(
     # regular EVs
     for ev_number, ev_path in enumerate(ev_paths, 1):
         if f'custom{ev_number}' not in design:
-            raise ValueError('Too many explanatory variables (EVs) passed in for the given design template! If you need to add more EVs, you should load your design in FEAT and add all your variables first, the re-save the template.')
+            raise ValueError('Too many explanatory variables (EVs) passed in for the given design template! If you need to add more EVs, you should load your design in FEAT and add all your variables first, then re-save the template.')
         
         evtitle = design[f'evtitle{ev_number}']
         logger.info(f'EV {evtitle}: using file {ev_path}')
