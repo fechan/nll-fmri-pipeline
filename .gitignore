@@ -1,4 +1,5 @@
-workdir
-.venv
+workdir/
+.venv/
+.venv_host/
 scripts/logs
 playground.ipynb
