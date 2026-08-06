@@ -1,3 +1,4 @@
+import subprocess
 from typing import Optional
 
 from fsl.data import featanalysis
@@ -14,6 +15,18 @@ def is_number(s):
         return True
     except ValueError:
         return False
+
+def get_number_of_volumes(input_4d_data_path: str):
+    '''Use Connectome Workbench to determine the number of volumes/maps in 4d input data'''
+    response = subprocess.run([
+        "wb_command",
+        "-file-information",
+        "-only-number-of-maps",
+        input_4d_data_path
+    ], capture_output=True)
+
+    volumes = response.stdout.decode('ascii').strip()
+    return int(volumes)
 
 def prepare_fsl_confound_file(
     confounds_tsv_path: str, # Path to confounds TSV
@@ -52,13 +65,13 @@ def prepare_design(
     design = featanalysis.loadFsf(template_fsf_path)
 
     design['outputdir'] = firstlevel_outputs_path
+    design['npts'] = get_number_of_volumes(input_4d_data_path)
     design['tr'] = tr
     design['paradigm_hp'] = hpf
     design['inputtype'] = 2
+    design['featwatcher_yn'] = 0 # don't want to open the web browser
     if confounds_path:
         design['confoundevs'] = 1
-    if 'npts' in design:
-        del design['npts'] # allow FEAT to infer the total volumes from the input file
 
     # regular EVs
     for ev_number, ev_path in enumerate(ev_paths, 1):
