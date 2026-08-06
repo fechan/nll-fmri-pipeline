@@ -20,11 +20,21 @@ RUN apt-get update  -y && \
       firefox         \
       libgomp1        \
       python3-pip     \
+      unzip           \
+      libopengl0      \
       x11-apps          && \
     pip install uv
 
 RUN wget https://fsl.fmrib.ox.ac.uk/fsldownloads/fslconda/releases/fslinstaller.py && \
-    python ./fslinstaller.py -d /usr/local/fsl/
+    python ./fslinstaller.py -d /usr/local/fsl/ && \
+    rm fslinstaller.py
+
+# Install Connectome Workbench
+
+RUN wget https://humanconnectome.org/storage/app/media/workbench/workbench-linux64-v2.2.1.zip -O workbench.zip && \
+    unzip workbench.zip -d /opt && \
+    rm workbench.zip
+ENV PATH="$PATH:/opt/workbench/bin_linux64"
 
 # Install FreeSurfer
 
