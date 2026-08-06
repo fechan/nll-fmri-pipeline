@@ -62,7 +62,7 @@ def prepare_fsl_confound_file(
 def prepare_design(
     template_fsf_path: str, # Input template design
     prepared_fsf_path: str, # Output prepared design
-    input_4d_data_path: str, # 4d brain data to run FEAT on
+    functional_volume_4d_path: str, # 4d brain data to run FEAT on
     firstlevel_outputs_path: str, # Directory where FEAT will dump analysis files to
     ev_paths: list[str], # EV/timing file in 3 column format
     confounds_path: Optional[str] = None, # Confounds file for FSL
@@ -75,7 +75,7 @@ def prepare_design(
     design = featanalysis.loadFsf(template_fsf_path)
 
     design['outputdir'] = firstlevel_outputs_path
-    design['npts'] = get_number_of_volumes(input_4d_data_path)
+    design['npts'] = get_number_of_volumes(functional_volume_4d_path)
     design['tr'] = tr
     design['paradigm_hp'] = hpf
     design['inputtype'] = 2
@@ -98,7 +98,7 @@ def prepare_design(
 
         if 'feat_files' in design:
             del design['feat_files']
-        out_fsf.write(f'set feat_files(1) "{input_4d_data_path.removesuffix('.nii.gz')}"\n')
+        out_fsf.write(f'set feat_files(1) "{functional_volume_4d_path.removesuffix('.nii.gz')}"\n')
 
         if 'confoundev_files' in design:
             del design['confoundev_files']
@@ -110,6 +110,23 @@ def prepare_design(
                 out_fsf.write(f'set fmri({setting}) "{value}"\n')  
             else:
                 out_fsf.write(f'set fmri({setting}) {value}\n')  
+
+def analyze_surface(
+    anatomical_surface_path: str,
+    functional_surface_4d_path: str,
+    design_matrix_path: str,
+    stats_output_path: str
+):
+    response = subprocess.run([
+        'film_gls',
+        '--mode=surface',
+        f'--rn={stats_output_path}',
+        f'--in={functional_surface_4d_path}',
+        f'--in2={anatomical_surface_path}',
+        f'--pd={design_matrix_path}',
+        '--sa', '--ms=15', '--epith=5' # for full prewhitening
+    ])
+    response.check_returncode()
 
 if __name__ == "__main__":
     logging.basicConfig(filename='logs/firstlevel.log', level=logging.INFO)
@@ -127,8 +144,8 @@ if __name__ == "__main__":
 
     prepare_design(
         template_fsf_path='/workdir/deafmeg/derivatives/fsl/firstlevel_4cond.fsf',
-        prepared_fsf_path= prepared_fsf_path,
-        input_4d_data_path='/workdir/deafmeg/sub-DMEGp01/ses-01/func/sub-DMEGp01_ses-01_task-langLocal_run-01_space-MNI152NLin2009cAsym_desc-preproc_bold.nii.gz',
+        prepared_fsf_path=prepared_fsf_path,
+        functional_volume_4d_path='/workdir/deafmeg/sub-DMEGp01/ses-01/func/sub-DMEGp01_ses-01_task-langLocal_run-01_space-MNI152NLin2009cAsym_desc-preproc_bold.nii.gz',
         ev_paths=[
             '/workdir/deafmeg/derivatives/timing/sub-DMEGp01/ses-01/ASLAct_01-Action.txt',
             '/workdir/deafmeg/derivatives/timing/sub-DMEGp01/ses-01/ASLAct_01-ASL.txt',
@@ -140,3 +157,5 @@ if __name__ == "__main__":
     )
 
     generate_design_matrix_files(prepared_fsf_path)
+
+
