@@ -6,3 +6,12 @@ services:
       - ./scripts:/scripts
       - "$HOME/.Xauthority:/root/.Xauthority:rw"
     network_mode: "host"
+    environment:
+      FS_LICENSE: "/workdir/license.txt"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
