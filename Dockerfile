@@ -42,6 +42,7 @@ RUN apt-get -y install gdebi-core
 RUN wget https://surfer.nmr.mgh.harvard.edu/pub/dist/freesurfer/8.1.0/freesurfer_ubuntu20-8.1.0_amd64.deb -O freesurfer.deb && \
     sh -c 'yes | gdebi freesurfer.deb' && \
     rm freesurfer.deb
+ENV PATH="$PATH:/usr/local/freesurfer/8.1.0/bin"
 
 ENV USER "root"
 ENTRYPOINT [ "sh", "-c", ". /usr/local/fsl/etc/fslconf/fsl.sh && /bin/bash" ]
