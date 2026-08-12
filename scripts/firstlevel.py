@@ -126,7 +126,7 @@ def analyze_surface(
         f'--in2={anatomical_surface_path}',
         f'--pd={design_matrix_path}',
         f'--con={contrast_path}',
-        # '--sa', '--ms=15', '--epith=5' # for full prewhitening
+        # '--sa', '--ms=15', '--epith=5' # for full prewhitening TODO: why does this crash film_gls?
     ])
     response.check_returncode()
 
