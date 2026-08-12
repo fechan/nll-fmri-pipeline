@@ -114,8 +114,9 @@ def prepare_design(
 def analyze_surface(
     anatomical_surface_path: str,
     functional_surface_4d_path: str,
-    design_matrix_path: str,
-    stats_output_path: str
+    design_matrix_path: str, # .mat file generated from the FSF design by FSL's feat_model
+    contrast_path: str, # .con file generated from the FSF design by FSL's feat_model
+    stats_output_path: str # Directory to put stats files
 ):
     response = subprocess.run([
         'film_gls',
@@ -124,7 +125,8 @@ def analyze_surface(
         f'--in={functional_surface_4d_path}',
         f'--in2={anatomical_surface_path}',
         f'--pd={design_matrix_path}',
-        '--sa', '--ms=15', '--epith=5' # for full prewhitening
+        f'--con={contrast_path}',
+        # '--sa', '--ms=15', '--epith=5' # for full prewhitening
     ])
     response.check_returncode()
 
@@ -158,4 +160,10 @@ if __name__ == "__main__":
 
     generate_design_matrix_files(prepared_fsf_path)
 
-
+    analyze_surface(
+        anatomical_surface_path='/workdir/deafmeg/sub-DMEGp01/ses-01/anat/sub-DMEGp01_ses-01_acq-MEMPRvNav_rec-RMS_hemi-L_midthickness.surf.gii',
+        functional_surface_4d_path='/workdir/deafmeg/sub-DMEGp01/ses-01/func/sub-DMEGp01_ses-01_task-langLocal_run-01_hemi-L_space-fsnative_bold.func.gii',
+        design_matrix_path=prepared_fsf_path.removesuffix('.fsf') + '.mat',
+        contrast_path=prepared_fsf_path.removesuffix('.fsf') + '.con',
+        stats_output_path='/workdir/deafmeg/derivatives/fsl/sub-DMEGp01/ses-01/surface-stats-fsnative'
+    )
