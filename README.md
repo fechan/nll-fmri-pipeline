@@ -9,7 +9,7 @@ The Docker container installs Connectome Workbench, FSL, FreeSurfer, and uv. The
 3. Configure GPU (or lack thereof):
   - If you use an NVIDIA GPU, install [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html) on your machine.
   - Otherwise, remove the `deploy` section from `compose.yaml`.
-4. Run `docker compose build` to build the container. This will take a while, as it will download and install very large fMRI software.
+4. Run `docker compose build` to build the container. Go have a nice meal― this step takes a while, because it downloads and installs very large fMRI software.
 5. Run `start.sh` to start the container.
 
 ### Subsequent runs
