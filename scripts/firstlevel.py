@@ -1,3 +1,12 @@
+"""
+Perform surface-based first level analysis.
+
+The following executables should be available in your PATH:
+- `wb_command` from Connectome Workbench
+- `feat_model` from FSL
+- `film_gls` from FSL
+"""
+
 import subprocess
 from typing import Optional
 
