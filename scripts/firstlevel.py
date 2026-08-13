@@ -15,7 +15,7 @@ from bids_path_utils import BIDSPaths
 from fsl.data import featanalysis
 import os
 import os.path as path
-import argparse
+import datetime
 import pandas as pd
 
 import logging
@@ -30,6 +30,7 @@ def is_number(s):
 
 def get_number_of_volumes(input_4d_data_path: str):
     '''Use Connectome Workbench to determine the number of volumes/maps in 4d input data'''
+    logger.info(f'Getting number of volumes in {input_4d_data_path}')
     response = subprocess.run([
         'wb_command',
         '-file-information',
@@ -43,6 +44,7 @@ def get_number_of_volumes(input_4d_data_path: str):
 
 def generate_design_matrix_files(fsf_path: str):
     '''Generate the design matrix files from the FSF'''
+    logger.info(f'Generating design matrix files from {fsf_path}')
     response = subprocess.run([
         'feat_model',
         fsf_path.removesuffix('.fsf')
@@ -130,6 +132,7 @@ def analyze_surface(
     contrast_path: str, # .con file generated from the FSF design by FSL's feat_model
     stats_output_path: str # Directory to put stats files
 ):
+    logger.info('Analyzing surface with film_gls')
     response = subprocess.run([
         'film_gls',
         '--mode=surface',
@@ -144,6 +147,7 @@ def analyze_surface(
 
 if __name__ == "__main__":
     logging.basicConfig(filename='logs/firstlevel.log', level=logging.INFO)
+    logger.info(f'=== Started firstlevel.py at {datetime.datetime.now()} ===')
 
     bids = BIDSPaths(root='/workdir/deafmeg/', subject='DMEGp01', session=1, run=1)
     hemisphere = 'L'
