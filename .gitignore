@@ -1,5 +1,6 @@
 workdir/
 .venv/
 .venv_host/
+__pycache__/
 scripts/logs
 playground.ipynb
