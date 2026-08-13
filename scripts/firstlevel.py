@@ -1,7 +1,10 @@
 import subprocess
 from typing import Optional
 
+from bids_path_utils import BIDSPaths
+
 from fsl.data import featanalysis
+import os
 import os.path as path
 import argparse
 import pandas as pd
@@ -133,37 +136,38 @@ def analyze_surface(
 if __name__ == "__main__":
     logging.basicConfig(filename='logs/firstlevel.log', level=logging.INFO)
 
-    fsl_confounds_path = '/workdir/deafmeg/derivatives/fsl-scripted/sub-DMEGp01_ses-01_task-langLocal_run-01_confounds.txt'
-
-    prepared_fsf_path = '/workdir/deafmeg/derivatives/fsl-scripted/sub-DMEGp01_ses-01_task-langLocal_run-01_firstlevel.fsf'
+    bids = BIDSPaths(root='/workdir/deafmeg/', subject='DMEGp01', session=1, run=1)
+    hemisphere = 'L'
+    template_fsf = '/workdir/deafmeg/sourcedata/firstlevel_4cond.fsf'
+    os.makedirs(bids.derivatives_fsl_design(), exist_ok=True)
 
     prepare_fsl_confound_file(
-        confounds_tsv_path='/workdir/deafmeg/sub-DMEGp01/ses-01/func/sub-DMEGp01_ses-01_task-langLocal_run-01_desc-confounds_timeseries.tsv',
+        confounds_tsv_path=bids.confounds_fmriprep(),
         confound_ev_cols=['rmsd', 'white_matter'],
-        output_confounds_path=fsl_confounds_path,
+        output_confounds_path=bids.confounds_fsl(),
         demean=True
     )
 
     prepare_design(
-        template_fsf_path='/workdir/deafmeg/derivatives/fsl/firstlevel_4cond.fsf',
-        prepared_fsf_path=prepared_fsf_path,
-        functional_volume_4d_path='/workdir/deafmeg/sub-DMEGp01/ses-01/func/sub-DMEGp01_ses-01_task-langLocal_run-01_space-MNI152NLin2009cAsym_desc-preproc_bold.nii.gz',
+        template_fsf_path=template_fsf,
+        prepared_fsf_path=bids.prepared_firstlevel_design_file(),
+        functional_volume_4d_path=bids.functional_volume(),
         ev_paths=[
-            '/workdir/deafmeg/derivatives/timing/sub-DMEGp01/ses-01/ASLAct_01-Action.txt',
-            '/workdir/deafmeg/derivatives/timing/sub-DMEGp01/ses-01/ASLAct_01-ASL.txt',
-            '/workdir/deafmeg/derivatives/timing/sub-DMEGp01/ses-01/ASLAct_01-Control.txt',
-            '/workdir/deafmeg/derivatives/timing/sub-DMEGp01/ses-01/ASLAct_01-Silly.txt',
+            path.join(bids.sourcedata(), 'timing/sub-DMEGp01/ses-01/ASLAct_01-Action.txt'),
+            path.join(bids.sourcedata(), 'timing/sub-DMEGp01/ses-01/ASLAct_01-ASL.txt'),
+            path.join(bids.sourcedata(), 'timing/sub-DMEGp01/ses-01/ASLAct_01-Control.txt'),
+            path.join(bids.sourcedata(), 'timing/sub-DMEGp01/ses-01/ASLAct_01-Silly.txt'),
         ],
-        confounds_path=fsl_confounds_path,
-        firstlevel_outputs_path='/workdir/deafmeg/derivatives/fsl/sub-DMEGp01/ses-01'
+        confounds_path=bids.confounds_fsl(),
+        firstlevel_outputs_path=bids.stats_volume_fsl()
     )
 
-    generate_design_matrix_files(prepared_fsf_path)
+    generate_design_matrix_files(bids.prepared_firstlevel_design_file())
 
     analyze_surface(
-        anatomical_surface_path='/workdir/deafmeg/sub-DMEGp01/ses-01/anat/sub-DMEGp01_ses-01_acq-MEMPRvNav_rec-RMS_hemi-L_midthickness.surf.gii',
-        functional_surface_4d_path='/workdir/deafmeg/sub-DMEGp01/ses-01/func/sub-DMEGp01_ses-01_task-langLocal_run-01_hemi-L_space-fsnative_bold.func.gii',
-        design_matrix_path=prepared_fsf_path.removesuffix('.fsf') + '.mat',
-        contrast_path=prepared_fsf_path.removesuffix('.fsf') + '.con',
-        stats_output_path='/workdir/deafmeg/derivatives/fsl/sub-DMEGp01/ses-01/surface-stats-fsnative'
+        anatomical_surface_path=bids.anatomical_surface(hemisphere),
+        functional_surface_4d_path=bids.functional_surface(hemisphere),
+        design_matrix_path=bids.prepared_firstlevel_design_file('.mat'),
+        contrast_path=bids.prepared_firstlevel_design_file('.con'),
+        stats_output_path=bids.stats_surface_fsl()
     )
