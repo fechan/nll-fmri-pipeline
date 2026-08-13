@@ -150,6 +150,7 @@ if __name__ == "__main__":
     logger.info(f'=== Started firstlevel.py at {datetime.datetime.now()} ===')
 
     bids = BIDSPaths(root='/workdir/deafmeg/', subject='DMEGp01', session=1, run=1)
+    conditions = ['Action', 'ASL', 'Control', 'Silly']
     hemisphere = 'L'
     template_fsf = '/workdir/deafmeg/sourcedata/firstlevel_4cond.fsf'
     os.makedirs(bids.derivatives_fsl_design(), exist_ok=True)
@@ -165,12 +166,7 @@ if __name__ == "__main__":
         template_fsf_path=template_fsf,
         prepared_fsf_path=bids.prepared_firstlevel_design_file(),
         functional_volume_4d_path=bids.functional_volume(),
-        ev_paths=[
-            path.join(bids.derivatives(), 'timing/sub-DMEGp01/ses-01/sub-DMEGp01_ses-01_run-01_desc-timingAction.txt'),
-            path.join(bids.derivatives(), 'timing/sub-DMEGp01/ses-01/sub-DMEGp01_ses-01_run-01_desc-timingASL.txt'),
-            path.join(bids.derivatives(), 'timing/sub-DMEGp01/ses-01/sub-DMEGp01_ses-01_run-01_desc-timingControl.txt'),
-            path.join(bids.derivatives(), 'timing/sub-DMEGp01/ses-01/sub-DMEGp01_ses-01_run-01_desc-timingSilly.txt'),
-        ],
+        ev_paths=[bids.timing_file_fsl(condition) for condition in conditions],
         confounds_path=bids.confounds_fsl(),
         firstlevel_outputs_path=bids.stats_volume_fsl()
     )
