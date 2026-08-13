@@ -5,10 +5,10 @@ The Docker container installs Connectome Workbench, FSL, FreeSurfer, and uv. The
 
 ### First run
 1. Create a folder named `workdir` in the in the repo's root directory. This is intended for your study's data, and will be mounted to the Docker container at `/workdir`.
-2. Copy your FSL `license.txt` to `/workdir/license.txt`.
+2. Copy your FreeSurfer `license.txt` to `/workdir/license.txt`.
 3. Configure GPU (or lack thereof):
-  - If you use an NVIDIA GPU, install [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html) on your machine.
-  - Otherwise, remove the `deploy` section from `compose.yaml`.
+    - If you use an NVIDIA GPU, install [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html) on your machine.
+    - Otherwise, remove the `deploy` section from `compose.yaml`.
 4. Run `docker compose build` to build the container. Go have a nice meal― this step takes a while, because it downloads and installs very large fMRI software.
 5. Run `start.sh` to start the container.
 
