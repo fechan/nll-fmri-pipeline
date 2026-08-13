@@ -8,5 +8,6 @@ dependencies = [
     "fslpy>=3.28.1",
     "ipykernel>=7.3.0",
     "numpy>=2.5.1",
+    "openpyxl>=3.1.5",
     "pandas>=3.0.3",
 ]

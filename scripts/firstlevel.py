@@ -153,10 +153,10 @@ if __name__ == "__main__":
         prepared_fsf_path=bids.prepared_firstlevel_design_file(),
         functional_volume_4d_path=bids.functional_volume(),
         ev_paths=[
-            path.join(bids.derivatives(), 'timing/sub-DMEGp01/ses-01/ASLAct_01-Action.txt'),
-            path.join(bids.derivatives(), 'timing/sub-DMEGp01/ses-01/ASLAct_01-ASL.txt'),
-            path.join(bids.derivatives(), 'timing/sub-DMEGp01/ses-01/ASLAct_01-Control.txt'),
-            path.join(bids.derivatives(), 'timing/sub-DMEGp01/ses-01/ASLAct_01-Silly.txt'),
+            path.join(bids.derivatives(), 'timing/sub-DMEGp01/ses-01/sub-DMEGp01_ses-01_run-01_desc-timingAction.txt'),
+            path.join(bids.derivatives(), 'timing/sub-DMEGp01/ses-01/sub-DMEGp01_ses-01_run-01_desc-timingASL.txt'),
+            path.join(bids.derivatives(), 'timing/sub-DMEGp01/ses-01/sub-DMEGp01_ses-01_run-01_desc-timingControl.txt'),
+            path.join(bids.derivatives(), 'timing/sub-DMEGp01/ses-01/sub-DMEGp01_ses-01_run-01_desc-timingSilly.txt'),
         ],
         confounds_path=bids.confounds_fsl(),
         firstlevel_outputs_path=bids.stats_volume_fsl()
