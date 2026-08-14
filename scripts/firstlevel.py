@@ -151,7 +151,7 @@ if __name__ == "__main__":
 
     bids = BIDSPaths(root='/workdir/deafmeg/', subject='DMEGp01', session=1, run=1)
     conditions = ['Action', 'ASL', 'Control', 'Silly']
-    hemisphere = 'L'
+    hemisphere = 'R'
     template_fsf = '/workdir/deafmeg/sourcedata/firstlevel_4cond.fsf'
     os.makedirs(bids.derivatives_fsl_design(), exist_ok=True)
 
@@ -178,5 +178,5 @@ if __name__ == "__main__":
         functional_surface_4d_path=bids.functional_surface(hemisphere),
         design_matrix_path=bids.prepared_firstlevel_design_file('.mat'),
         contrast_path=bids.prepared_firstlevel_design_file('.con'),
-        stats_output_path=bids.stats_surface_fsl()
+        stats_output_path=bids.stats_surface_fsl(hemisphere)
     )
