@@ -62,12 +62,11 @@ if __name__ == '__main__':
     run = 1
 
     bids = BIDSPaths('/workdir/deafmeg', subject, session, run)
+    viz_dir = path.join(bids.derivatives(), 'visualization')
+    os.makedirs(viz_dir, exist_ok=True)
+
     contrasts = get_contrasts(bids.prepared_firstlevel_design_file())
-
     for contrast_number, contrast_name in contrasts.items():
-        viz_dir = path.join(bids.derivatives(), 'visualization')
-        os.makedirs(viz_dir, exist_ok=True)
-
         stats_fname = f'zstat{contrast_number}.func.gii'
         visualize_zstat(
             left_hemi_stats_path=path.join(bids.stats_surface_fsl(hemisphere='L'), stats_fname),
