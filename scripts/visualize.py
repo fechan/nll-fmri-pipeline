@@ -33,7 +33,7 @@ def visualize_zstat(
 
     # make figure
     p = Plot(lh, rh)
-    p.add_layer(stats, cmap='hot')
+    p.add_layer(stats, cmap='hot', cbar_label='z-score')
 
     fig = p.build()
     if figure_title:
@@ -44,15 +44,16 @@ def visualize_zstat(
 
     return fig
 
-def get_contrast_name(design_file_path: str, contrast_number: int):
-    design = featanalysis.loadFsf(design_file_path)
-    contrast_name = design[f'conname_real.{contrast_number}']
-    return contrast_name
+def get_contrasts(design_file_path: str) -> dict[int, str]:
+    contrasts = {}
 
-def get_number_of_contrasts(design_file_path: str):
     design = featanalysis.loadFsf(design_file_path)
-    contrasts = design['ncon_real']
-    return int(contrasts)
+    n_contrasts = int(design['ncon_real'])
+    
+    for contrast_number in range(1, n_contrasts + 1):
+        contrasts[contrast_number] = design[f'conname_real.{contrast_number}']
+
+    return contrasts
 
 if __name__ == '__main__':
     p_value = 0.01
@@ -61,11 +62,9 @@ if __name__ == '__main__':
     run = 1
 
     bids = BIDSPaths('/workdir/deafmeg', subject, session, run)
-    contrasts = get_number_of_contrasts(bids.prepared_firstlevel_design_file())
+    contrasts = get_contrasts(bids.prepared_firstlevel_design_file())
 
-    for contrast_number in range(1, contrasts + 1):
-        contrast_name = get_contrast_name(bids.prepared_firstlevel_design_file(), contrast_number)
-
+    for contrast_number, contrast_name in contrasts.items():
         viz_dir = path.join(bids.derivatives(), 'visualization')
         os.makedirs(viz_dir, exist_ok=True)
 
