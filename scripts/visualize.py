@@ -12,6 +12,16 @@ from bids_path_utils import BIDSPaths
 from fsl.data import featanalysis
 from statistics import NormalDist
 
+# Load fsaverage surface (reused for every visualization)
+surfaces = load_fsaverage(mesh='fsaverage')
+lh = surfaces['inflated'].parts['left'].file_path
+rh = surfaces['inflated'].parts['right'].file_path
+
+# Compute gyri/sulci to use as a background (reused for every visualization)
+curv_sign = load_fsaverage_data(mesh='fsaverage', data_type="curvature")
+for hemi, data in curv_sign.data.parts.items():
+    curv_sign.data.parts[hemi] = np.sign(data)
+
 def load_and_do_thresholding(stats_path: str, thresh: float):
     stats = nib.load(stats_path)
     return threshold(stats.darrays[0].data, thresh, two_sided=False)
@@ -24,10 +34,6 @@ def visualize_zstat(
     output_path: Optional[str] = None
 ):
     # load and threshold data
-    surfaces = load_fsaverage(mesh='fsaverage')
-    lh = surfaces['inflated'].parts['left'].file_path
-    rh = surfaces['inflated'].parts['right'].file_path
-
     min_z_score = NormalDist().inv_cdf((2 - p_value) / 2.)
     stats = {
         'left': load_and_do_thresholding(left_hemi_stats_path, min_z_score),
@@ -36,10 +42,6 @@ def visualize_zstat(
 
     # make figure
     p = Plot(lh, rh)
-
-    curv_sign = load_fsaverage_data(mesh='fsaverage', data_type="curvature")
-    for hemi, data in curv_sign.data.parts.items():
-        curv_sign.data.parts[hemi] = np.sign(data)
 
     p.add_layer(
         {
@@ -76,7 +78,7 @@ if __name__ == '__main__':
     p_value = 0.01
     subject = 'DMEGp01'
     session = 1
-    run = 1
+    run = 2
 
     bids = BIDSPaths('/workdir/deafmeg', subject, session, run)
     viz_dir = path.join(bids.derivatives(), 'visualization')
