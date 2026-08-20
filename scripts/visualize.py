@@ -1,6 +1,5 @@
 from typing import Optional
 
-from neuromaps.datasets import fetch_fsaverage
 from nilearn.datasets import load_fsaverage_data, load_fsaverage
 
 from surfplot import Plot
@@ -25,8 +24,9 @@ def visualize_zstat(
     output_path: Optional[str] = None
 ):
     # load and threshold data
-    surfaces = fetch_fsaverage(density='164k')
-    lh, rh = surfaces['inflated']
+    surfaces = load_fsaverage(mesh='fsaverage')
+    lh = surfaces['inflated'].parts['left'].file_path
+    rh = surfaces['inflated'].parts['right'].file_path
 
     min_z_score = NormalDist().inv_cdf((2 - p_value) / 2.)
     stats = {
