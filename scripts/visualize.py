@@ -1,9 +1,12 @@
 from typing import Optional
 
 from neuromaps.datasets import fetch_fsaverage
+from nilearn.datasets import load_fsaverage_data, load_fsaverage
+
 from surfplot import Plot
 from surfplot.utils import threshold
 import nibabel as nib
+import numpy as np
 import os
 import os.path as path
 from bids_path_utils import BIDSPaths
@@ -33,6 +36,20 @@ def visualize_zstat(
 
     # make figure
     p = Plot(lh, rh)
+
+    curv_sign = load_fsaverage_data(mesh='fsaverage', data_type="curvature")
+    for hemi, data in curv_sign.data.parts.items():
+        curv_sign.data.parts[hemi] = np.sign(data)
+
+    p.add_layer(
+        {
+            'left': curv_sign.data.parts['left'],
+            'right': curv_sign.data.parts['right'],
+        },
+        cmap='gray',
+        cbar=False,
+        alpha=0.25,
+    )
     p.add_layer(stats, cmap='hot', cbar_label='z-score')
 
     fig = p.build()
