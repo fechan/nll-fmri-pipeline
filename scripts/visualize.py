@@ -11,6 +11,9 @@ import os.path as path
 from bids_path_utils import BIDSPaths
 from fsl.data import featanalysis
 from statistics import NormalDist
+import argparse
+import bids_file_finder as bff
+import matplotlib.pyplot as plt
 
 # Load fsaverage surface (reused for every visualization)
 surfaces = load_fsaverage(mesh='fsaverage')
@@ -61,6 +64,8 @@ def visualize_zstat(
     if output_path:
         fig.savefig(output_path)
 
+    plt.close()
+
     return fig
 
 def get_contrasts(design_file_path: str) -> dict[int, str]:
@@ -75,22 +80,33 @@ def get_contrasts(design_file_path: str) -> dict[int, str]:
     return contrasts
 
 if __name__ == '__main__':
-    p_value = 0.01
-    subject = 'DMEGp01'
-    session = 1
-    run = 2
+    parser = argparse.ArgumentParser(
+        prog='visualize',
+        description='Visualize results of first-level analysis. Visualizations will appear in <project_root>/derivatives/visualization.'
+    )
+    parser.add_argument('project_root', help='Path to the BIDS project root (e.g. /workdir/deafmeg)')
+    parser.add_argument('-p', '--p_value', type=float, default=0.01, help='P-value significance level (e.g. 0.01).')
+    args = parser.parse_args()
 
-    bids = BIDSPaths('/workdir/deafmeg', subject, session, run)
-    viz_dir = path.join(bids.derivatives(), 'visualization')
-    os.makedirs(viz_dir, exist_ok=True)
+    p_value = args.p_value
 
-    contrasts = get_contrasts(bids.prepared_firstlevel_design_file())
-    for contrast_number, contrast_name in contrasts.items():
-        stats_fname = f'zstat{contrast_number}.func.gii'
-        visualize_zstat(
-            left_hemi_stats_path=path.join(bids.stats_surface_fsl(hemisphere='L'), stats_fname),
-            right_hemi_stats_path=path.join(bids.stats_surface_fsl(hemisphere='R'), stats_fname),
-            p_value=p_value,
-            figure_title=f'{contrast_name}, {subject} session {session} run {run} (p <= {p_value})',
-            output_path=path.join(viz_dir, f'sub-{subject}_ses-{session}_run-{run}_desc-zstat{contrast_number}.png')
-        )
+    runs = bff.list_analyzable_runs(args.project_root)
+    for _, run_metadata in runs.iterrows():
+        subject = run_metadata['sub']
+        session = int(run_metadata['ses'])
+        run = int(run_metadata['run'])
+
+        bids = BIDSPaths(args.project_root, subject, session, run)
+        viz_dir = path.join(bids.derivatives(), 'visualization')
+        os.makedirs(viz_dir, exist_ok=True)
+
+        contrasts = get_contrasts(bids.prepared_firstlevel_design_file())
+        for contrast_number, contrast_name in contrasts.items():
+            stats_fname = f'zstat{contrast_number}.func.gii'
+            visualize_zstat(
+                left_hemi_stats_path=path.join(bids.stats_surface_fsl(hemisphere='L'), stats_fname),
+                right_hemi_stats_path=path.join(bids.stats_surface_fsl(hemisphere='R'), stats_fname),
+                p_value=p_value,
+                figure_title=f'{contrast_name}, {subject} session {session} run {run} (p <= {p_value})',
+                output_path=path.join(viz_dir, f'sub-{subject}_ses-{session}_run-{run}_desc-zstat{contrast_number}.png')
+            )
