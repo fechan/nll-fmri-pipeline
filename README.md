@@ -55,7 +55,7 @@ After running BIDS curation on a session, you can run fMRIPrep.
 1. Make a project folder in `workdir` if you haven't already (e.g. `workdir/deafmeg`).
 1. The `bids-fmriprep` zip file contains a single folder with a long hexidecimal name. Extract the contents of this folder into the project folder.
     - If done correctly, your project folder should contain a `sourcedata` and a folder for your subject starting with `sub-`.
-1. In `sourcedata`, create a `timing` folder. The timing data from Psychopy is not included in the fMRIPrep outputs, and this is where the timings will go for all subjects.
+1. In `sourcedata`, create a `timing` folder. This is where all the Psychopy timing data (separate from the fMRIPrep outputs) will go for all subjects.
 1. Put all your timing XLSX spreadsheets in the `timing` folder and rename them to the format `sub-<subject>_ses-<session>_run-<run>.xlsx` (e.g. `sub-DMEGp01_ses-01_run-01.xlsx`)
 
 ## Script usage
