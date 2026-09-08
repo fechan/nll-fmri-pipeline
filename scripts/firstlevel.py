@@ -198,7 +198,7 @@ if __name__ == "__main__":
     logger.info(f'=== Started firstlevel.py at {datetime.datetime.now()} ===')
 
     # Detect which runs we can analyze based on the timing files
-    runs = bff.list_files(f'{args.project_root}/derivatives/timing')[['sub','ses','run']].drop_duplicates()
+    runs = bff.list_analyzable_runs(args.project_root)
     if len(runs) == 0:
         logger.info(f'No runs detected to do first-level analysis on! Did you make sure to run the gen_timing_files.py script first?')
         quit()
@@ -206,6 +206,7 @@ if __name__ == "__main__":
     # Analyze them
     for _, run_metadata in runs.iterrows():
         for hemisphere in ['L', 'R']:
+            logger.info(f'Performing first-level analysis on sub-{run_metadata['sub']} run-{run_metadata['ses']} run-{run_metadata['run']} hemi-{hemisphere}')
             run_firstlevel(
                 project_root=args.project_root,
                 template_fsf=args.template_fsf,
