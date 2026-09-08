@@ -37,3 +37,7 @@ def list_files(root: str, recursive: bool = True):
         }, **get_metadata(basename)))
 
     return pd.DataFrame(file_metadata)
+
+def list_analyzable_runs(project_root: str):
+    timing_dir = path.join(project_root, 'derivatives/timing')
+    return list_files(timing_dir)[['sub','ses','run']].drop_duplicates()
