@@ -55,13 +55,13 @@ After running BIDS curation on a session, you can run fMRIPrep.
 1. Make a project folder in `workdir` if you haven't already (e.g. `workdir/deafmeg`).
 1. The `bids-fmriprep` zip file contains a single folder with a long hexidecimal name. Extract the contents of this folder into the project folder.
     - If done correctly, your project folder should contain a `sourcedata` and a folder for your subject starting with `sub-`.
-1. 
 
 ## Script usage
 Scripts should be run inside the container, and are mounted to the `/scripts` directory in the container.
 
 1. Run `cd /scripts`.
 2. Run `uv run <the_script_you_want_to_run.py>`.
+    - Tip: Adding the `--help` flag at the end (e.g. `uv run firstlevel.py --help`) describes the parameters needed for running the script.
 
 UV will automatically download and install the dependencies in `/scripts/pyproject.toml`, and run the desired script.
 
