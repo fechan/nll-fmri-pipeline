@@ -3,24 +3,18 @@ import os
 import os.path as path
 import numpy as np
 import argparse
+import bids_file_finder as bff
 
-def main(
-    sourcefiles_timing_root: str, # Directory in sourcedata containing all the timing XLSX files in the project
+def generate_3column(
+    timing_spreadsheet_meta: pd.Series, # Series with metadata about the timing spreadsheet file
     derivatives_timing_root: str, # Directory in derivatives that all the newly generated timing txt files should go
-    subject_id: str,
-    session: int,
-    run: int,
     conditions: list[str] = ["Action","ASL","Control","Silly"],
 ):
-    session_id = f"{session:02d}"
-    run_id = f"{run:02d}"
+    subject_id = timing_spreadsheet_meta['sub']
+    session_id = timing_spreadsheet_meta['ses']
+    run_id = timing_spreadsheet_meta['run']
 
-    data_file_path = path.join(
-        sourcefiles_timing_root,
-        f'sub-{subject_id}',
-        f'ses-{session_id}',
-        f'sub-{subject_id}_ses-{session_id}_run-{run_id}.xlsx'
-    )
+    data_file_path = timing_spreadsheet_meta['path']
     output_dir = path.join(
         derivatives_timing_root,
         f'sub-{subject_id}',
@@ -48,16 +42,11 @@ def main(
         np.savetxt(condition_output_path, condition_df[["trial_onset", "trial_dur","regressor_height"]].values, fmt=['%1.1f','%1.1f','%d'])
 
 if __name__ == "__main__":
-    main(
-        sourcefiles_timing_root='/workdir/deafmeg/sourcedata/timing',
-        derivatives_timing_root='/workdir/deafmeg/derivatives/timing',
-        subject_id='DMEGp01',
-        session=1,
-        run=2
-    )
-    # parser = argparse.ArgumentParser(
-    #     prog='gen_timing_files',
-    #     description='Generate FSL 3-column timing files from an XLSX spreadsheet',
-    # )
-    # parser.add_argument()
-    # main()
+    files_in = bff.list_files('/workdir/deafmeg/sourcedata/timing')
+    files_in = files_in[files_in.extension == '.xlsx']
+
+    for _, file_meta in files_in.iterrows():
+        generate_3column(
+            timing_spreadsheet_meta=file_meta,
+            derivatives_timing_root='/workdir/deafmeg/derivatives/timing'
+        )
