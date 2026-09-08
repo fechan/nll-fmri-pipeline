@@ -44,16 +44,19 @@ def generate_3column(
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         prog='gen_timing_files',
-        description='Generate FSL 3-column timing files from XLSX spreadsheets',
+        description='Generate FSL 3-column timing files from XLSX spreadsheets. The spreadsheets are expected to be in <project_root>/sourcedata/timing, and the FSL timing files will be output to <project_root>/derivatives/timing',
     )
-    parser.add_argument('timing_dir', help='Root path of the timing files (e.g. /workdir/deafmeg/sourcedata/timing).')
+    parser.add_argument('project_root', help='Path to the BIDS project root (e.g. /workdir/deafmeg)')
     args = parser.parse_args()
 
-    files_in = bff.list_files(args.timing_dir)
+    spreadsheets_dir = path.join(args.project_root, 'sourcedata/timing')
+    fsl_timings_dir = path.join(args.project_root, 'derivatives/timing')
+
+    files_in = bff.list_files(spreadsheets_dir)
     files_in = files_in[files_in.extension == '.xlsx']
 
     for _, file_meta in files_in.iterrows():
         generate_3column(
             timing_spreadsheet_meta=file_meta,
-            derivatives_timing_root='/workdir/deafmeg/derivatives/timing'
+            derivatives_timing_root=fsl_timings_dir
         )
