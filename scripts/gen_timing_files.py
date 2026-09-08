@@ -42,7 +42,14 @@ def generate_3column(
         np.savetxt(condition_output_path, condition_df[["trial_onset", "trial_dur","regressor_height"]].values, fmt=['%1.1f','%1.1f','%d'])
 
 if __name__ == "__main__":
-    files_in = bff.list_files('/workdir/deafmeg/sourcedata/timing')
+    parser = argparse.ArgumentParser(
+        prog='gen_timing_files',
+        description='Generate FSL 3-column timing files from XLSX spreadsheets',
+    )
+    parser.add_argument('timing_dir', help='Root path of the timing files (e.g. /workdir/deafmeg/sourcedata/timing).')
+    args = parser.parse_args()
+
+    files_in = bff.list_files(args.timing_dir)
     files_in = files_in[files_in.extension == '.xlsx']
 
     for _, file_meta in files_in.iterrows():
