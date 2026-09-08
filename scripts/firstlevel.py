@@ -8,15 +8,17 @@ The following executables should be available in your PATH:
 """
 
 import subprocess
-from typing import Optional
+from typing import Literal, Optional
 
 from bids_path_utils import BIDSPaths
+import bids_file_finder as bff
 
 from fsl.data import featanalysis
 import os
 import os.path as path
 import datetime
 import pandas as pd
+import argparse
 
 import logging
 logger = logging.getLogger(__name__)
@@ -145,14 +147,16 @@ def analyze_surface(
     ])
     response.check_returncode()
 
-if __name__ == "__main__":
-    logging.basicConfig(filename='logs/firstlevel.log', level=logging.INFO)
-    logger.info(f'=== Started firstlevel.py at {datetime.datetime.now()} ===')
-
-    bids = BIDSPaths(root='/workdir/deafmeg/', subject='DMEGp01', session=1, run=1)
-    conditions = ['Action', 'ASL', 'Control', 'Silly']
-    hemisphere = 'R'
-    template_fsf = '/workdir/deafmeg/sourcedata/firstlevel_4cond.fsf'
+def run_firstlevel(
+    project_root: str,
+    template_fsf: str,
+    subject: str,
+    session: int,
+    run: int,
+    hemisphere: Literal['L', 'R'],
+    conditions: list[str] = ['Action', 'ASL', 'Control', 'Silly'],
+):
+    bids = BIDSPaths(project_root, subject, session, run)
     os.makedirs(bids.derivatives_fsl_design(), exist_ok=True)
 
     prepare_fsl_confound_file(
@@ -180,3 +184,33 @@ if __name__ == "__main__":
         contrast_path=bids.prepared_firstlevel_design_file('.con'),
         stats_output_path=bids.stats_surface_fsl(hemisphere)
     )
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        prog='firstlevel',
+        description='Perform surface-based first level analysis.'
+    )
+    parser.add_argument('project_root', help='Path to the BIDS project root (e.g. /workdir/deafmeg)')
+    parser.add_argument('template_fsf', help='Path to the template design FSF (e.g. /workdir/deafmeg/sourcedata/firstlevel_4cond.fsf)')
+    args = parser.parse_args()
+
+    logging.basicConfig(filename='logs/firstlevel.log', level=logging.INFO)
+    logger.info(f'=== Started firstlevel.py at {datetime.datetime.now()} ===')
+
+    # Detect which runs we can analyze based on the timing files
+    runs = bff.list_files(f'{args.project_root}/derivatives/timing')[['sub','ses','run']].drop_duplicates()
+    if len(runs) == 0:
+        logger.info(f'No runs detected to do first-level analysis on! Did you make sure to run the gen_timing_files.py script first?')
+        quit()
+
+    # Analyze them
+    for _, run_metadata in runs.iterrows():
+        for hemisphere in ['L', 'R']:
+            run_firstlevel(
+                project_root=args.project_root,
+                template_fsf=args.template_fsf,
+                subject=run_metadata['sub'],
+                session=int(run_metadata['ses']),
+                run=int(run_metadata['run']),
+                hemisphere=hemisphere
+            )
