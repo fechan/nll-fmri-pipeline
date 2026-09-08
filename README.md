@@ -68,7 +68,7 @@ Scripts should be run inside the container, and are mounted to the `/scripts` di
 UV will automatically download and install the dependencies in `/scripts/pyproject.toml`, and run the desired script.
 
 ### Timing file generation (`gen_timing_files.py`)
-This converts XLSX timing spreadsheets in `<project_dir>/sourcedata/timing` into timing `txt` files needed by Freesurfer in `<project_dir>/derivatives/timing`.
+This converts Psychopy's XLSX timing spreadsheets in `<project_dir>/sourcedata/timing` into timing `txt` files needed by FSL in `<project_dir>/derivatives/timing`.
 
 ### First-level analysis (`firstlevel.py`)
 This performs first-level analysis on all functional runs in the project with FSL, and outputs them to `<project_dir>/derivatives/fsl`.
