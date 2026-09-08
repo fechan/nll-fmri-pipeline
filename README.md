@@ -71,8 +71,9 @@ UV will automatically download and install the dependencies in `/scripts/pyproje
 This converts XLSX timing spreadsheets in `<project_dir>/sourcedata/timing` into timing `txt` files needed by Freesurfer in `<project_dir>/derivatives/timing`.
 
 ### First-level analysis (`firstlevel.py`)
-This performs first-level analysis on a single functional run with Freesurfer.
+This performs first-level analysis on all functional runs in the project with FreeSurfer.
 
 ### First-level visualization (`visualize.py`)
+This visualizes the z-stats from first-level analysis in `png` files in `<project_dir>/derivatives/visualization`.
 
 ## Basic concepts for new RAs
